@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { getRecordById, updateRecord, deleteRecord } from '@/lib/storage'
 import { spreads } from '@/data/spreads'
 import CardDisplay from '@/components/card-display'
+import ReadingContent from '@/components/reading-content'
 import SpreadThreeCard from '@/components/spread-three-card'
 import SpreadFiveCard from '@/components/spread-five-card'
 import SpreadHorseshoe from '@/components/spread-horseshoe'
@@ -173,6 +174,27 @@ export default function HistoryDetailPage() {
             </div>
           )}
         </div>
+
+        {record.aiReading && Object.keys(record.aiReading).length > 0 && (
+          <div className="rounded-2xl border-2 border-primary/20 bg-white p-4 sm:p-6">
+            <h3 className="text-xl font-bold text-primary mb-3">🔮 AI 塔羅解讀</h3>
+            {Object.entries(record.aiReading).map(([mode, text]) => {
+              const modeLabels: Record<string, string> = {
+                overall: '整體解讀',
+                'per-card': '逐張解讀',
+                both: '都要',
+              }
+              return (
+                <div key={mode} className="mb-4 last:mb-0">
+                  <h4 className="text-base font-semibold text-foreground mb-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary inline-block">
+                    {modeLabels[mode] ?? mode}
+                  </h4>
+                  <ReadingContent text={text} />
+                </div>
+              )
+            })}
+          </div>
+        )}
 
         <div className="flex gap-3 justify-center mt-4 flex-wrap">
           <Button onClick={() => router.push('/')} variant="secondary">

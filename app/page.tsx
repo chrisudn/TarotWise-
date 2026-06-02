@@ -21,6 +21,7 @@ export default function Home() {
   const [isDrawing, setIsDrawing] = useState(false)
   const [saved, setSaved] = useState(false)
   const [allRevealed, setAllRevealed] = useState(false)
+  const [readings, setReadings] = useState<Record<string, string>>({})
 
   const handleDraw = useCallback(() => {
     setIsDrawing(true)
@@ -48,6 +49,7 @@ export default function Home() {
       spreadType,
       cards: result,
       note: '',
+      aiReading: Object.keys(readings).length > 0 ? readings : undefined,
     }
     const ok = saveRecord(record)
     if (ok) {
@@ -55,13 +57,14 @@ export default function Home() {
     } else {
       alert('儲存空間已滿（上限 200 筆），請刪除舊記錄後再試')
     }
-  }, [result, question, spreadType])
+  }, [result, question, spreadType, readings])
 
   const handleClear = useCallback(() => {
     setResult(null)
     setQuestion('')
     setSaved(false)
     setAllRevealed(false)
+    setReadings({})
   }, [])
 
   const handleSpreadChange = useCallback((type: SpreadType) => {
@@ -186,7 +189,7 @@ export default function Home() {
         {result && (
           <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
             {renderSpread()}
-            <AiReading question={question} spreadType={spreadType} cards={result} disabled={!allRevealed} />
+            <AiReading question={question} spreadType={spreadType} cards={result} disabled={!allRevealed} onReadingUpdate={setReadings} />
           </div>
         )}
       </main>

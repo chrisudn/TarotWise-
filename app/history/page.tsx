@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { getRecords } from '@/lib/storage'
 import { spreads } from '@/data/spreads'
@@ -10,7 +10,13 @@ import Button from '@/components/ui/button'
 
 export default function HistoryPage() {
   const router = useRouter()
-  const records = getRecords()
+  const [mounted, setMounted] = useState(false)
+  const [records, setRecords] = useState<ReturnType<typeof getRecords>>([])
+
+  useEffect(() => {
+    setRecords(getRecords())
+    setMounted(true)
+  }, [])
 
   const [searchQuery, setSearchQuery] = useState('')
   const [filterSpread, setFilterSpread] = useState<SpreadType | ''>('')
@@ -36,6 +42,19 @@ export default function HistoryPage() {
   }, [records, searchQuery, filterSpread])
 
   const allSpreadTypes = [...new Set(records.map((r) => r.spreadType))]
+
+  if (!mounted) {
+    return (
+      <div className="flex flex-col flex-1 min-h-screen px-4 py-8">
+        <header className="flex items-center gap-4 mb-6">
+          <Button onClick={() => router.push('/')} variant="ghost">
+            ← 返回
+          </Button>
+          <h1 className="text-2xl font-bold text-primary">歷史記錄</h1>
+        </header>
+      </div>
+    )
+  }
 
   return (
     <div className="flex flex-col flex-1 min-h-screen px-4 py-8">

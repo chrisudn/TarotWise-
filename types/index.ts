@@ -27,6 +27,7 @@ export interface ReadingRecord {
   spreadType: SpreadType
   cards: DrawnCard[]
   note?: string
+  aiReading?: Record<string, string>
 }
 
 export interface SpreadPosition {

@@ -1,9 +1,7 @@
 'use client'
 
-import { useState, type ReactNode } from 'react'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
-import CollapsibleSection from './collapsible-section'
+import { useState, useEffect } from 'react'
+import ReadingContent from './reading-content'
 import type { DrawnCard, SpreadType } from '@/types'
 import type { ReadingMode } from '@/lib/reading-prompt'
 import { getFallbackReading } from '@/lib/fallback-reading'
@@ -13,6 +11,7 @@ interface AiReadingProps {
   spreadType: SpreadType
   cards: DrawnCard[]
   disabled?: boolean
+  onReadingUpdate?: (readings: Record<string, string>) => void
 }
 
 const modes: { value: ReadingMode; label: string }[] = [
@@ -26,71 +25,7 @@ interface CachedResult {
   isFallback: boolean
 }
 
-const cardHeaderRe = /^### .+? — .+?（正位|逆位）$/m
-
-interface Block {
-  type: 'card' | 'text'
-  header?: string
-  content: string
-}
-
-function parseIntoBlocks(text: string): Block[] {
-  const blocks: Block[] = []
-  let buf = ''
-  let currentHeader = ''
-
-  for (const line of text.split('\n')) {
-    if (cardHeaderRe.test(line)) {
-      if (buf) blocks.push({ type: 'text', content: buf })
-      currentHeader = line.replace(/^### /, '')
-      buf = ''
-    } else {
-      buf += line + '\n'
-    }
-  }
-
-  if (buf) {
-    blocks.push(currentHeader
-      ? { type: 'card', header: currentHeader, content: buf }
-      : { type: 'text', content: buf })
-  }
-
-  return blocks
-}
-
-function ReadingContent({ text }: { text: string }) {
-  const blocks = parseIntoBlocks(text)
-
-  const elements: ReactNode[] = []
-  let cardIdx = 0
-
-  for (let i = 0; i < blocks.length; i++) {
-    const b = blocks[i]
-
-    if (b.type === 'card') {
-      elements.push(
-        <CollapsibleSection key={`card-${cardIdx}`} title={b.header!}>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {b.content}
-          </ReactMarkdown>
-        </CollapsibleSection>,
-      )
-      cardIdx++
-    } else {
-      elements.push(
-        <div key={`text-${i}`} className="prose prose-lg max-w-none">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {b.content}
-          </ReactMarkdown>
-        </div>,
-      )
-    }
-  }
-
-  return <div className="flex flex-col gap-3">{elements}</div>
-}
-
-export default function AiReading({ question, spreadType, cards, disabled }: AiReadingProps) {
+export default function AiReading({ question, spreadType, cards, disabled, onReadingUpdate }: AiReadingProps) {
   const [mode, setMode] = useState<ReadingMode>('overall')
   const [cache, setCache] = useState<Partial<Record<ReadingMode, CachedResult>>>({})
   const [loadingMode, setLoadingMode] = useState<ReadingMode | null>(null)
@@ -136,6 +71,16 @@ export default function AiReading({ question, spreadType, cards, disabled }: AiR
       return next
     })
   }
+
+  useEffect(() => {
+    const readings: Record<string, string> = {}
+    for (const [m, result] of Object.entries(cache)) {
+      if (result) readings[m] = result.text
+    }
+    if (Object.keys(readings).length > 0) {
+      onReadingUpdate?.(readings)
+    }
+  }, [cache, onReadingUpdate])
 
   return (
     <div className="w-full rounded-2xl border-2 border-primary/20 bg-white p-4 sm:p-6">
