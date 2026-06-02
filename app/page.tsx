@@ -9,6 +9,7 @@ import SpreadThreeCard from '@/components/spread-three-card'
 import SpreadFiveCard from '@/components/spread-five-card'
 import SpreadHorseshoe from '@/components/spread-horseshoe'
 import Button from '@/components/ui/button'
+import AiReading from '@/components/ai-reading'
 import type { DrawnCard, SpreadType } from '@/types'
 
 export default function Home() {
@@ -157,6 +158,7 @@ export default function Home() {
         {result && (
           <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
             {renderSpread()}
+            <AiReading question={question} spreadType={spreadType} cards={result} />
           </div>
         )}
       </main>
