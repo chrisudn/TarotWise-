@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { DrawnCard, SpreadType } from '@/types'
 import type { ReadingMode } from '@/lib/reading-prompt'
 import { getFallbackReading } from '@/lib/fallback-reading'
@@ -113,36 +115,10 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
               ⚠️ AI 服務暫時無法連線，以下為內建牌義參考
             </div>
           )}
-          <div className="prose prose-lg max-w-none">
-            {current.text.split('\n').map((line, i) => {
-              if (line.startsWith('## ')) {
-                return (
-                  <h2 key={i} className="text-lg font-bold text-primary mt-4 mb-2">
-                    {line.replace('## ', '')}
-                  </h2>
-                )
-              }
-              if (line.startsWith('### ')) {
-                return (
-                  <h3 key={i} className="text-base font-semibold text-foreground mt-3 mb-1">
-                    {line.replace('### ', '')}
-                  </h3>
-                )
-              }
-              if (line.startsWith('- ')) {
-                return (
-                  <li key={i} className="text-base text-foreground ml-4 list-disc">
-                    {line.replace('- ', '')}
-                  </li>
-                )
-              }
-              if (line.trim() === '') return <div key={i} className="h-2" />
-              return (
-                <p key={i} className="text-base text-foreground leading-relaxed">
-                  {line}
-                </p>
-              )
-            })}
+          <div className="prose prose-lg max-w-none text-foreground [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-primary [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-1 [&_li]:text-base [&_p]:text-base [&_p]:leading-relaxed [&_strong]:font-bold [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {current.text}
+            </ReactMarkdown>
           </div>
           <button
             onClick={handleReRead}
