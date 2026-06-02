@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import type { SpreadType } from '@/types'
 import { spreads } from '@/data/spreads'
 
@@ -46,6 +47,12 @@ export default function SpreadSelector({ value, onChange }: SpreadSelectorProps)
       <p className="text-sm text-muted text-center leading-relaxed">
         {spreads[value].suitableFor}
       </p>
+      <Link
+        href={`/spreads/${value}`}
+        className="text-sm text-primary hover:text-primary-light underline underline-offset-2 text-center"
+      >
+        查看牌陣說明 →
+      </Link>
     </div>
   )
 }
