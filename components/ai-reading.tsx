@@ -115,7 +115,7 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
               ⚠️ AI 服務暫時無法連線，以下為內建牌義參考
             </div>
           )}
-          <div className="prose prose-lg max-w-none text-foreground [&_h2]:text-lg [&_h2]:font-bold [&_h2]:text-primary [&_h2]:mt-4 [&_h2]:mb-2 [&_h3]:text-base [&_h3]:font-semibold [&_h3]:mt-3 [&_h3]:mb-1 [&_li]:text-base [&_p]:text-base [&_p]:leading-relaxed [&_strong]:font-bold [&_ul]:list-disc [&_ul]:ml-4 [&_ol]:list-decimal [&_ol]:ml-4">
+          <div className="prose prose-lg max-w-none">
             <ReactMarkdown remarkPlugins={[remarkGfm]}>
               {current.text}
             </ReactMarkdown>

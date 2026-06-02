@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TarotWise — 塔羅智慧
 
-## Getting Started
+> 隨時隨地抽牌、AI 智慧解牌、記錄心靈軌跡
 
-First, run the development server:
+AI 輔助塔羅占卜 Web 應用，支援多種牌陣、AI 自動解牌、歷史記錄查詢。
+
+## 技術棧
+
+- **框架**：[Next.js](https://nextjs.org/) 16 (App Router) + Turbopack
+- **語言**：TypeScript
+- **樣式**：Tailwind CSS v4 + `@tailwindcss/typography`
+- **AI 解牌**：OpenAI GPT-4o-mini（API 可選，未設定時使用內建牌義）
+- **資料儲存**：LocalStorage（上限 200 筆記錄）
+- **部署**：Vercel
+- **字型**：`Segoe UI` / `Noto Sans TC`，基礎字型 18px（銀髮友善）
+
+## 功能
+
+| 功能 | 狀態 |
+|------|------|
+| 78 張塔羅牌資料（中英對照 + 關鍵字） | ✅ |
+| 隨機抽牌（洗牌邏輯） | ✅ |
+| 4 種牌陣：單卡／三張（過去-現在-未來）／五張十字／馬蹄鐵七張 | ✅ |
+| 牌陣位置說明標籤 | ✅ |
+| 每張牌的立即翻牌動畫 | ✅ |
+| 記錄自動儲存至 LocalStorage | ✅ |
+| 歷史記錄列表 + 明細頁面 | ✅ |
+| AI 自動解牌（3 種模式） | ✅ |
+| 內建 78 張牌義（AI 離線備援） | ✅ |
+| 銀髮友善 UI（≥ 18px、≥ 48px 點擊區域） | ✅ |
+
+## 牌陣
+
+| 牌陣 | 張數 | 適用範圍 |
+|------|------|----------|
+| 單卡占卜 | 1 | 快速指引、每日運勢 |
+| 三張牌陣 | 3 | 過去-現在-未來 |
+| 五張十字牌陣 | 5 | 挑戰-助力-潛意識-建議-結果 |
+| 馬蹄鐵牌陣 | 7 | 一週發展、逐步指引 |
+
+## AI 解讀
+
+- 三種閱讀模式：**整體解讀**（省 token）／**逐張解讀**／**都要**
+- 已讀結果快取，切換模式不重複呼叫
+- 支援 Markdown 格式輸出（標題、列表、粗體、表格）
+- 自動備援：API 無法連線時顯示內建牌義
+- 方向感知：牌陣類型（如十字、馬蹄鐵）會注入提示詞
+
+## 開發
 
 ```bash
+# 安裝相依套件
+npm install
+
+# 啟動開發伺服器（Turbopack）
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# 建置正式版本
+npm run build
+
+# 程式碼檢查
+npm run lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### AI 功能設定（選用）
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. 在根目錄建立 `.env.local`
+2. 填入你的 OpenAI API Key：
+   ```
+   OPENAI_API_KEY=sk-...
+   ```
+3. 重新啟動開發伺服器即可啟用 AI 解牌
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+未設定 API Key 時，應用程式會正常運作並使用內建 78 張牌義。
 
-## Learn More
+## 部署
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx vercel --prod --yes
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+環境變數 `OPENAI_API_KEY` 需在 Vercel 專案設定中手動填入。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 專案結構
 
-## Deploy on Vercel
+```
+src/
+├── app/
+│   ├── page.tsx            # 首頁（抽牌主流程）
+│   ├── layout.tsx          # 全域版型（含 Footer）
+│   ├── globals.css         # 全域樣式（Tailwind 主題）
+│   ├── api/reading/route.ts # AI 解讀 API（GPT-4o-mini）
+│   ├── history/
+│   │   ├── page.tsx        # 歷史記錄列表
+│   │   └── [id]/page.tsx   # 單筆記錄明細
+├── components/
+│   ├── ai-reading.tsx      # AI 解讀面板（3 模式 + 快取）
+│   ├── card-display.tsx    # 單張卡片顯示
+│   ├── position-label.tsx  # 牌陣位置標籤
+│   ├── spread-selector.tsx # 牌陣選擇器
+│   ├── spread-three-card.tsx
+│   ├── spread-five-card.tsx
+│   └── spread-horseshoe.tsx
+├── data/
+│   ├── tarot-cards.ts      # 78 張塔羅牌資料
+│   ├── tarot-meanings.ts   # 78 張牌義（AI 備援）
+│   └── spreads.ts          # 牌陣定義
+├── lib/
+│   ├── tarot-reader.ts     # 抽牌邏輯
+│   ├── storage.ts          # LocalStorage
+│   ├── reading-prompt.ts   # AI 提示詞建構
+│   └── fallback-reading.ts # 備援牌義生成
+└── types/
+    └── index.ts            # 型別定義
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 版本
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`v0.1.0` — 初始公開版本。詳見 [CHANGELOG](./CHANGELOG.md)。
+
+## 授權
+
+MIT
