@@ -26,6 +26,7 @@ export interface ReadingRecord {
   question: string
   spreadType: SpreadType
   cards: DrawnCard[]
+  note?: string
 }
 
 export interface SpreadPosition {

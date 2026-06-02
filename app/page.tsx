@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState, useCallback } from 'react'
 import { drawSingleCard, drawSpread } from '@/lib/tarot-reader'
 import { saveRecord } from '@/lib/storage'
@@ -46,6 +47,7 @@ export default function Home() {
       question,
       spreadType,
       cards: result,
+      note: '',
     }
     const ok = saveRecord(record)
     if (ok) {
@@ -155,6 +157,12 @@ export default function Home() {
           🃏 TarotWise
         </h1>
         <p className="text-lg text-muted mt-2">塔羅智慧 — 傾聽內心的聲音</p>
+        <Link
+          href="/history"
+          className="inline-block mt-2 text-sm text-primary hover:text-primary-light underline underline-offset-2"
+        >
+          歷史記錄 →
+        </Link>
       </header>
 
       <main className="flex flex-col items-center w-full max-w-lg gap-6">
