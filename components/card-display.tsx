@@ -44,18 +44,20 @@ export default function CardDisplay({ card, showPosition = true, size = 'normal'
         {isReversed ? '逆位' : '正位'}
       </div>
 
-      {!isCompact && (
-        <div className="flex flex-wrap justify-center gap-1.5">
-          {keywords.map((kw, i) => (
-            <span
-              key={i}
-              className="rounded-full bg-primary/10 px-2.5 py-0.5 text-sm sm:text-base text-primary"
-            >
-              {kw}
-            </span>
-          ))}
-        </div>
-      )}
+      <div className={`flex flex-wrap justify-center ${isCompact ? 'gap-0.5' : 'gap-1.5'}`}>
+        {keywords.map((kw, i) => (
+          <span
+            key={i}
+            className={`rounded-full bg-primary/10 text-primary ${
+              isCompact
+                ? 'px-1.5 py-0 text-[10px] sm:text-xs'
+                : 'px-2.5 py-0.5 text-sm sm:text-base'
+            }`}
+          >
+            {kw}
+          </span>
+        ))}
+      </div>
     </div>
   )
 }
