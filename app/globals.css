@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme inline {
+  --color-background: #faf8f5;
+  --color-foreground: #2d2a24;
+  --color-primary: #6b4c3b;
+  --color-primary-light: #a67c66;
+  --color-accent: #c9a96e;
+  --color-card-bg: #ffffff;
+  --color-card-border: #e5dfd8;
+  --color-muted: #8a8580;
+
+  --font-size-base: 18px;
+  --font-size-lg: 22px;
+  --font-size-xl: 26px;
+  --font-size-2xl: 32px;
+  --font-size-3xl: 38px;
+  --font-size-display: 42px;
+
+  --spacing-touch: 48px;
+}
+
+@layer base {
+  html {
+    font-size: 18px;
+  }
+
+  button,
+  a,
+  input,
+  textarea,
+  select {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  body {
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: 'Segoe UI', 'Noto Sans TC', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+  }
+}
