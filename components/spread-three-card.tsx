@@ -1,15 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { DrawnCard } from '@/types'
 import CardDisplay from './card-display'
 import PositionLabel from './position-label'
 
 interface SpreadThreeCardProps {
   cards: DrawnCard[]
+  onAllRevealed?: () => void
 }
 
-export default function SpreadThreeCard({ cards }: SpreadThreeCardProps) {
+export default function SpreadThreeCard({ cards, onAllRevealed }: SpreadThreeCardProps) {
   const [revealedCount, setRevealedCount] = useState(0)
 
   const handleReveal = () => {
@@ -19,6 +20,10 @@ export default function SpreadThreeCard({ cards }: SpreadThreeCardProps) {
   }
 
   const allRevealed = revealedCount >= cards.length
+
+  useEffect(() => {
+    if (allRevealed) onAllRevealed?.()
+  }, [allRevealed, onAllRevealed])
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">

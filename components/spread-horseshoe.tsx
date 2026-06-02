@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import type { DrawnCard } from '@/types'
 import CardDisplay from './card-display'
 import PositionLabel from './position-label'
@@ -8,11 +8,12 @@ import { spreads } from '@/data/spreads'
 
 interface SpreadHorseshoeProps {
   cards: DrawnCard[]
+  onAllRevealed?: () => void
 }
 
 const positions = spreads['horseshoe'].positions
 
-export default function SpreadHorseshoe({ cards }: SpreadHorseshoeProps) {
+export default function SpreadHorseshoe({ cards, onAllRevealed }: SpreadHorseshoeProps) {
   const [revealedCount, setRevealedCount] = useState(0)
 
   const handleReveal = () => {
@@ -22,6 +23,10 @@ export default function SpreadHorseshoe({ cards }: SpreadHorseshoeProps) {
   }
 
   const allRevealed = revealedCount >= cards.length
+
+  useEffect(() => {
+    if (allRevealed) onAllRevealed?.()
+  }, [allRevealed, onAllRevealed])
 
   return (
     <div className="flex flex-col items-center gap-4 w-full">

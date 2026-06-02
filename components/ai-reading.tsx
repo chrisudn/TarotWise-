@@ -12,6 +12,7 @@ interface AiReadingProps {
   question: string
   spreadType: SpreadType
   cards: DrawnCard[]
+  disabled?: boolean
 }
 
 const modes: { value: ReadingMode; label: string }[] = [
@@ -89,7 +90,7 @@ function ReadingContent({ text }: { text: string }) {
   return <div className="flex flex-col gap-3">{elements}</div>
 }
 
-export default function AiReading({ question, spreadType, cards }: AiReadingProps) {
+export default function AiReading({ question, spreadType, cards, disabled }: AiReadingProps) {
   const [mode, setMode] = useState<ReadingMode>('overall')
   const [cache, setCache] = useState<Partial<Record<ReadingMode, CachedResult>>>({})
   const [loadingMode, setLoadingMode] = useState<ReadingMode | null>(null)
@@ -158,11 +159,15 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
 
       {!current && loadingMode !== mode && (
         <button
-          onClick={handleFetch}
-          className="w-full h-touch rounded-xl bg-accent text-white text-lg font-medium
-                     hover:brightness-110 active:brightness-95 transition-all"
+          onClick={disabled ? undefined : handleFetch}
+          disabled={disabled}
+          className={`w-full h-touch rounded-xl text-lg font-medium transition-all
+            ${disabled
+              ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+              : 'bg-accent text-white hover:brightness-110 active:brightness-95'
+            }`}
         >
-          取得 AI 解讀
+          {disabled ? '請先翻完所有牌' : '取得 AI 解讀'}
         </button>
       )}
 

@@ -8,6 +8,7 @@ import SpreadSelector from '@/components/spread-selector'
 import SpreadThreeCard from '@/components/spread-three-card'
 import SpreadFiveCard from '@/components/spread-five-card'
 import SpreadHorseshoe from '@/components/spread-horseshoe'
+import SpreadCelticCross from '@/components/spread-celtic-cross'
 import Button from '@/components/ui/button'
 import AiReading from '@/components/ai-reading'
 import type { DrawnCard, SpreadType } from '@/types'
@@ -18,14 +19,17 @@ export default function Home() {
   const [result, setResult] = useState<DrawnCard[] | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [allRevealed, setAllRevealed] = useState(false)
 
   const handleDraw = useCallback(() => {
     setIsDrawing(true)
     setSaved(false)
+    setAllRevealed(false)
 
     if (spreadType === 'single') {
       const card = drawSingleCard()
       setResult([card])
+      setAllRevealed(true)
     } else {
       const cards = drawSpread(spreadType)
       setResult(cards)
@@ -55,12 +59,14 @@ export default function Home() {
     setResult(null)
     setQuestion('')
     setSaved(false)
+    setAllRevealed(false)
   }, [])
 
   const handleSpreadChange = useCallback((type: SpreadType) => {
     setSpreadType(type)
     setResult(null)
     setSaved(false)
+    setAllRevealed(false)
   }, [])
 
   function renderSpread() {
@@ -86,7 +92,7 @@ export default function Home() {
       case 'three-card':
         return (
           <>
-            <SpreadThreeCard cards={result} />
+            <SpreadThreeCard cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
                 {saved ? '✓ 已儲存' : '儲存結果'}
@@ -100,7 +106,7 @@ export default function Home() {
       case 'five-card':
         return (
           <>
-            <SpreadFiveCard cards={result} />
+            <SpreadFiveCard cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
                 {saved ? '✓ 已儲存' : '儲存結果'}
@@ -114,7 +120,21 @@ export default function Home() {
       case 'horseshoe':
         return (
           <>
-            <SpreadHorseshoe cards={result} />
+            <SpreadHorseshoe cards={result} onAllRevealed={() => setAllRevealed(true)} />
+            <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
+                {saved ? '✓ 已儲存' : '儲存結果'}
+              </Button>
+              <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
+                重新來過
+              </Button>
+            </div>
+          </>
+        )
+      case 'celtic-cross':
+        return (
+          <>
+            <SpreadCelticCross cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
                 {saved ? '✓ 已儲存' : '儲存結果'}
@@ -158,7 +178,7 @@ export default function Home() {
         {result && (
           <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
             {renderSpread()}
-            <AiReading question={question} spreadType={spreadType} cards={result} />
+            <AiReading question={question} spreadType={spreadType} cards={result} disabled={!allRevealed} />
           </div>
         )}
       </main>

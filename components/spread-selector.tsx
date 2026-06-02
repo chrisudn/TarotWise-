@@ -9,7 +9,7 @@ interface SpreadSelectorProps {
   onChange: (value: SpreadType) => void
 }
 
-const spreadOrder: SpreadType[] = ['single', 'three-card', 'five-card', 'horseshoe']
+const spreadOrder: SpreadType[] = ['single', 'three-card', 'five-card', 'horseshoe', 'celtic-cross']
 
 export default function SpreadSelector({ value, onChange }: SpreadSelectorProps) {
   return (

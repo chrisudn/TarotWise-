@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { spreads } from '@/data/spreads'
 import type { SpreadType } from '@/types'
 
-const spreadOrder: SpreadType[] = ['single', 'three-card', 'five-card', 'horseshoe']
+const spreadOrder: SpreadType[] = ['single', 'three-card', 'five-card', 'horseshoe', 'celtic-cross']
 
 function DiagramSingle({ s }: { s: (typeof spreads)[string] }) {
   return (
@@ -60,6 +60,47 @@ function DiagramFiveCard({ s }: { s: (typeof spreads)[string] }) {
   )
 }
 
+function DiagramCelticCross({ s }: { s: (typeof spreads)[string] }) {
+  const staffPos = s.positions.slice(6)
+  return (
+    <div className="flex flex-col gap-3 items-center w-full max-w-sm mx-auto">
+      <div className="grid grid-cols-3 gap-2 w-full">
+        {(() => {
+          const layout = [
+            { idx: 4, gridClass: 'col-start-2 row-start-1' },
+            { idx: 5, gridClass: 'col-start-1 row-start-2' },
+            { idx: 0, gridClass: 'col-start-2 row-start-2' },
+            { idx: 1, gridClass: 'col-start-2 row-start-2' },
+            { idx: 3, gridClass: 'col-start-3 row-start-2' },
+            { idx: 2, gridClass: 'col-start-2 row-start-3' },
+          ]
+          return layout.map(({ idx, gridClass }) => {
+            const pos = s.positions[idx]
+            return (
+              <div key={pos.key} className={`flex flex-col items-center gap-1 ${gridClass}`}>
+                <div className="w-full aspect-[3/4] rounded-xl border-2 border-primary bg-primary/5 flex items-center justify-center shadow-sm">
+                  <span className="text-xl">{idx === 1 ? '🃏✖️' : '🃏'}</span>
+                </div>
+                <span className="text-[10px] font-medium text-primary text-center leading-tight">{pos.label}</span>
+              </div>
+            )
+          })
+        })()}
+      </div>
+      <div className="grid grid-cols-4 gap-2 w-full">
+        {staffPos.map((pos: { key: string; label: string; description: string }) => (
+          <div key={pos.key} className="flex flex-col items-center gap-1">
+            <div className="w-full aspect-[3/4] rounded-xl border-2 border-primary bg-primary/5 flex items-center justify-center shadow-sm">
+              <span className="text-xl">🃏</span>
+            </div>
+            <span className="text-[10px] font-medium text-primary text-center leading-tight">{pos.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function DiagramHorseshoe({ s }: { s: (typeof spreads)[string] }) {
   return (
     <div className="flex flex-col gap-3 items-center w-full max-w-sm mx-auto">
@@ -92,6 +133,7 @@ const diagramComponents: Record<SpreadType, typeof DiagramSingle> = {
   'three-card': DiagramThreeCard,
   'five-card': DiagramFiveCard,
   horseshoe: DiagramHorseshoe,
+  'celtic-cross': DiagramCelticCross,
 }
 
 function SpreadDiagram({ type, s }: { type: SpreadType; s: (typeof spreads)[string] }) {
