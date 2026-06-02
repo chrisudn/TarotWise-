@@ -9,12 +9,13 @@ import { spreads } from '@/data/spreads'
 interface SpreadHorseshoeProps {
   cards: DrawnCard[]
   onAllRevealed?: () => void
+  revealed?: boolean
 }
 
 const positions = spreads['horseshoe'].positions
 
-export default function SpreadHorseshoe({ cards, onAllRevealed }: SpreadHorseshoeProps) {
-  const [revealedCount, setRevealedCount] = useState(0)
+export default function SpreadHorseshoe({ cards, onAllRevealed, revealed = false }: SpreadHorseshoeProps) {
+  const [revealedCount, setRevealedCount] = useState(revealed ? cards.length : 0)
 
   const handleReveal = () => {
     if (revealedCount < cards.length) {

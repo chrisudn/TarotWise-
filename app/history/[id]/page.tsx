@@ -5,6 +5,10 @@ import { useParams, useRouter } from 'next/navigation'
 import { getRecordById, updateRecord, deleteRecord } from '@/lib/storage'
 import { spreads } from '@/data/spreads'
 import CardDisplay from '@/components/card-display'
+import SpreadThreeCard from '@/components/spread-three-card'
+import SpreadFiveCard from '@/components/spread-five-card'
+import SpreadHorseshoe from '@/components/spread-horseshoe'
+import SpreadCelticCross from '@/components/spread-celtic-cross'
 import Button from '@/components/ui/button'
 
 export default function HistoryDetailPage() {
@@ -148,10 +152,26 @@ export default function HistoryDetailPage() {
           )}
         </div>
 
-        <div className="flex flex-col items-center gap-4">
-          {record.cards.map((card, i) => (
-            <CardDisplay key={i} card={card} />
-          ))}
+        <div className="w-full">
+          {record.spreadType === 'three-card' && (
+            <SpreadThreeCard cards={record.cards} revealed />
+          )}
+          {record.spreadType === 'five-card' && (
+            <SpreadFiveCard cards={record.cards} revealed />
+          )}
+          {record.spreadType === 'horseshoe' && (
+            <SpreadHorseshoe cards={record.cards} revealed />
+          )}
+          {record.spreadType === 'celtic-cross' && (
+            <SpreadCelticCross cards={record.cards} revealed />
+          )}
+          {(record.spreadType === 'single' || !['three-card', 'five-card', 'horseshoe', 'celtic-cross'].includes(record.spreadType)) && (
+            <div className="flex flex-col items-center gap-4">
+              {record.cards.map((card, i) => (
+                <CardDisplay key={i} card={card} />
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex gap-3 justify-center mt-4 flex-wrap">

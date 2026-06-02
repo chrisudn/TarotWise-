@@ -9,6 +9,7 @@ import { spreads } from '@/data/spreads'
 interface SpreadFiveCardProps {
   cards: DrawnCard[]
   onAllRevealed?: () => void
+  revealed?: boolean
 }
 
 const positions = spreads['five-card'].positions
@@ -20,8 +21,8 @@ const gridMap: Record<string, string> = {
   right: 'col-start-3 row-start-2',
 }
 
-export default function SpreadFiveCard({ cards, onAllRevealed }: SpreadFiveCardProps) {
-  const [revealedCount, setRevealedCount] = useState(0)
+export default function SpreadFiveCard({ cards, onAllRevealed, revealed = false }: SpreadFiveCardProps) {
+  const [revealedCount, setRevealedCount] = useState(revealed ? cards.length : 0)
 
   const handleReveal = () => {
     if (revealedCount < cards.length) {

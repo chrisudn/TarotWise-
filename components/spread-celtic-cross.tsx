@@ -9,6 +9,7 @@ import { spreads } from '@/data/spreads'
 interface SpreadCelticCrossProps {
   cards: DrawnCard[]
   onAllRevealed?: () => void
+  revealed?: boolean
 }
 
 const positions = spreads['celtic-cross'].positions
@@ -21,8 +22,8 @@ function cardOrPlaceholder(card: DrawnCard, idx: number, revealedCount: number) 
   )
 }
 
-export default function SpreadCelticCross({ cards, onAllRevealed }: SpreadCelticCrossProps) {
-  const [revealedCount, setRevealedCount] = useState(0)
+export default function SpreadCelticCross({ cards, onAllRevealed, revealed = false }: SpreadCelticCrossProps) {
+  const [revealedCount, setRevealedCount] = useState(revealed ? cards.length : 0)
 
   const handleReveal = () => {
     if (revealedCount < cards.length) {

@@ -8,10 +8,11 @@ import PositionLabel from './position-label'
 interface SpreadThreeCardProps {
   cards: DrawnCard[]
   onAllRevealed?: () => void
+  revealed?: boolean
 }
 
-export default function SpreadThreeCard({ cards, onAllRevealed }: SpreadThreeCardProps) {
-  const [revealedCount, setRevealedCount] = useState(0)
+export default function SpreadThreeCard({ cards, onAllRevealed, revealed = false }: SpreadThreeCardProps) {
+  const [revealedCount, setRevealedCount] = useState(revealed ? cards.length : 0)
 
   const handleReveal = () => {
     if (revealedCount < cards.length) {
