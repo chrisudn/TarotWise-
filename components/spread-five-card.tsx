@@ -44,13 +44,13 @@ export default function SpreadFiveCard({ cards }: SpreadFiveCardProps) {
         </button>
       )}
 
-      <div className="grid grid-cols-3 grid-rows-3 gap-2 sm:gap-3 w-full max-w-sm mx-auto aspect-square">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full max-w-sm mx-auto">
         {cards.map((card, i) => {
           const pos = positions[i]
           return (
             <div
               key={i}
-              className={`flex flex-col items-center justify-center gap-1 ${gridMap[pos.key]}`}
+              className={`flex flex-col items-center gap-1 ${gridMap[pos.key]}`}
             >
               <PositionLabel
                 label={pos.label}
@@ -63,7 +63,7 @@ export default function SpreadFiveCard({ cards }: SpreadFiveCardProps) {
                   <CardDisplay card={card} showPosition={false} size="compact" />
                 </div>
               ) : (
-                <div className="w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
+                <div className="w-full min-h-[120px] sm:min-h-[160px] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
                   <span className="text-3xl sm:text-5xl text-muted">?</span>
                 </div>
               )}
