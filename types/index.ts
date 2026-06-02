@@ -39,5 +39,7 @@ export interface SpreadDefinition {
   name: string
   nameZh: string
   cardCount: number
+  focus: string
+  suitableFor: string
   positions: SpreadPosition[]
 }

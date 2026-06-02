@@ -32,6 +32,7 @@ export function buildPrompt(
 【輸入資料】
 用戶提問：${question || '（未提供具體問題）'}
 牌陣：${spread.nameZh}
+牌陣專長：${spread.focus} — ${spread.suitableFor}
 
 牌卡清單：
 ${cardsSection}
@@ -41,6 +42,7 @@ ${cardsSection}
 2. 具體且客製化的情境連結：將牌義與用戶的提問背景深度結合，解釋每張牌為何出現在這個位置，避免籠統安慰。
 3. 務實的行動建議：提供 1-3 個具體、可落實在日常的行動步驟。
 4. 結構化排版：使用 Markdown 語法（標題、條列式），層次分明。
+5. 專業定向：根據牌陣的專長領域調整解讀角度。三張牌陣著重時間線的因果脈絡；五張十字著重隱藏因素與多面向分析；馬蹄鐵著重全局發展與階段性建議。
 
 【模式指示】
 ${modeInstructions[mode]}
