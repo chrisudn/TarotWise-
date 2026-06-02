@@ -18,7 +18,7 @@ export interface DrawnCard {
   positionLabel: string
 }
 
-export type SpreadType = 'single' | 'three-card'
+export type SpreadType = 'single' | 'three-card' | 'five-card' | 'horseshoe'
 
 export interface ReadingRecord {
   id: string
