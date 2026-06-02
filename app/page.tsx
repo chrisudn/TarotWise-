@@ -129,7 +129,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col flex-1 items-center px-4 py-8 min-h-screen">
+    <div className="flex flex-col flex-1 items-center px-4 py-8">
       <header className="text-center mb-6">
         <h1 className="text-display font-bold text-primary">
           🃏 TarotWise
@@ -162,12 +162,6 @@ export default function Home() {
           </div>
         )}
       </main>
-
-      <footer className="mt-auto pt-8 text-sm text-muted text-center">
-        <a href="/history" className="hover:text-primary underline underline-offset-2">
-          查看歷史記錄
-        </a>
-      </footer>
     </div>
   )
 }

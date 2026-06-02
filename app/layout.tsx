@@ -17,6 +17,8 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-background text-foreground antialiased">
         {children}
         <footer className="mt-auto text-center text-sm py-4 px-4 text-muted border-t border-card-border">
+          <a href="/history" className="hover:text-primary underline underline-offset-2">查看歷史記錄</a>
+          <span className="mx-2">·</span>
           TarotWise v{pkg.version}
         </footer>
       </body>
