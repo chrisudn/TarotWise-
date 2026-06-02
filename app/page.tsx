@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect, useRef } from 'react'
 import { drawSingleCard, drawSpread } from '@/lib/tarot-reader'
-import { saveRecord } from '@/lib/storage'
+import { saveRecord, updateRecord, deleteRecord } from '@/lib/storage'
 import CardDisplay from '@/components/card-display'
 import SpreadSelector from '@/components/spread-selector'
 import SpreadThreeCard from '@/components/spread-three-card'
@@ -19,14 +19,18 @@ export default function Home() {
   const [question, setQuestion] = useState('')
   const [result, setResult] = useState<DrawnCard[] | null>(null)
   const [isDrawing, setIsDrawing] = useState(false)
-  const [saved, setSaved] = useState(false)
   const [allRevealed, setAllRevealed] = useState(false)
-  const [readings, setReadings] = useState<Record<string, string>>({})
+  const currentRecordId = useRef<string | null>(null)
 
   const handleDraw = useCallback(() => {
     setIsDrawing(true)
-    setSaved(false)
     setAllRevealed(false)
+
+    // delete previous draft if exists
+    if (currentRecordId.current) {
+      deleteRecord(currentRecordId.current)
+      currentRecordId.current = null
+    }
 
     if (spreadType === 'single') {
       const card = drawSingleCard()
@@ -40,37 +44,45 @@ export default function Home() {
     setIsDrawing(false)
   }, [spreadType])
 
-  const handleSave = useCallback(() => {
+  // auto-save record when cards are drawn
+  useEffect(() => {
     if (!result) return
-    const record = {
-      id: crypto.randomUUID(),
+    const id = crypto.randomUUID()
+    saveRecord({
+      id,
       timestamp: Date.now(),
       question,
       spreadType,
       cards: result,
       note: '',
-      aiReading: Object.keys(readings).length > 0 ? readings : undefined,
+    })
+    currentRecordId.current = id
+  }, [result])
+
+  // persist AI readings to localStorage as they arrive
+  const handleReadingUpdate = useCallback((readings: Record<string, string>) => {
+    if (currentRecordId.current) {
+      updateRecord(currentRecordId.current, { aiReading: readings })
     }
-    const ok = saveRecord(record)
-    if (ok) {
-      setSaved(true)
-    } else {
-      alert('儲存空間已滿（上限 200 筆），請刪除舊記錄後再試')
-    }
-  }, [result, question, spreadType, readings])
+  }, [])
 
   const handleClear = useCallback(() => {
+    if (currentRecordId.current) {
+      deleteRecord(currentRecordId.current)
+      currentRecordId.current = null
+    }
     setResult(null)
     setQuestion('')
-    setSaved(false)
     setAllRevealed(false)
-    setReadings({})
   }, [])
 
   const handleSpreadChange = useCallback((type: SpreadType) => {
+    if (currentRecordId.current) {
+      deleteRecord(currentRecordId.current)
+      currentRecordId.current = null
+    }
     setSpreadType(type)
     setResult(null)
-    setSaved(false)
     setAllRevealed(false)
   }, [])
 
@@ -85,8 +97,8 @@ export default function Home() {
               <CardDisplay card={result[0]} />
             </div>
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
-                {saved ? '✓ 已儲存' : '儲存結果'}
+              <Button variant="secondary" disabled className="w-full sm:w-auto">
+                ✓ 已自動儲存
               </Button>
               <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                 再抽一次
@@ -99,8 +111,8 @@ export default function Home() {
           <>
             <SpreadThreeCard cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
-                {saved ? '✓ 已儲存' : '儲存結果'}
+              <Button variant="secondary" disabled className="w-full sm:w-auto">
+                ✓ 已自動儲存
               </Button>
               <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                 重新來過
@@ -113,8 +125,8 @@ export default function Home() {
           <>
             <SpreadFiveCard cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
-                {saved ? '✓ 已儲存' : '儲存結果'}
+              <Button variant="secondary" disabled className="w-full sm:w-auto">
+                ✓ 已自動儲存
               </Button>
               <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                 重新來過
@@ -127,8 +139,8 @@ export default function Home() {
           <>
             <SpreadHorseshoe cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
-                {saved ? '✓ 已儲存' : '儲存結果'}
+              <Button variant="secondary" disabled className="w-full sm:w-auto">
+                ✓ 已自動儲存
               </Button>
               <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                 重新來過
@@ -141,8 +153,8 @@ export default function Home() {
           <>
             <SpreadCelticCross cards={result} onAllRevealed={() => setAllRevealed(true)} />
             <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
-                {saved ? '✓ 已儲存' : '儲存結果'}
+              <Button variant="secondary" disabled className="w-full sm:w-auto">
+                ✓ 已自動儲存
               </Button>
               <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                 重新來過
@@ -189,7 +201,7 @@ export default function Home() {
         {result && (
           <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
             {renderSpread()}
-            <AiReading question={question} spreadType={spreadType} cards={result} disabled={!allRevealed} onReadingUpdate={setReadings} />
+            <AiReading question={question} spreadType={spreadType} cards={result} disabled={!allRevealed} onReadingUpdate={handleReadingUpdate} />
           </div>
         )}
       </main>
