@@ -17,16 +17,20 @@ const modes: { value: ReadingMode; label: string }[] = [
   { value: 'both', label: '都要' },
 ]
 
+interface CachedResult {
+  text: string
+  isFallback: boolean
+}
+
 export default function AiReading({ question, spreadType, cards }: AiReadingProps) {
   const [mode, setMode] = useState<ReadingMode>('overall')
-  const [result, setResult] = useState<string | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [isFallback, setIsFallback] = useState(false)
+  const [cache, setCache] = useState<Partial<Record<ReadingMode, CachedResult>>>({})
+  const [loadingMode, setLoadingMode] = useState<ReadingMode | null>(null)
+
+  const current = cache[mode]
 
   const handleFetch = async () => {
-    setIsLoading(true)
-    setResult(null)
-    setIsFallback(false)
+    setLoadingMode(mode)
 
     try {
       const res = await fetch('/api/reading', {
@@ -37,17 +41,32 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
       const data = await res.json()
 
       if (data.fallback) {
-        setIsFallback(true)
-        setResult(getFallbackReading(cards, spreadType, mode))
+        setCache((prev) => ({
+          ...prev,
+          [mode]: { text: getFallbackReading(cards, spreadType, mode), isFallback: true },
+        }))
       } else {
-        setResult(data.text)
+        setCache((prev) => ({
+          ...prev,
+          [mode]: { text: data.text, isFallback: false },
+        }))
       }
     } catch {
-      setIsFallback(true)
-      setResult(getFallbackReading(cards, spreadType, mode))
+      setCache((prev) => ({
+        ...prev,
+        [mode]: { text: getFallbackReading(cards, spreadType, mode), isFallback: true },
+      }))
     }
 
-    setIsLoading(false)
+    setLoadingMode(null)
+  }
+
+  const handleReRead = () => {
+    setCache((prev) => {
+      const next = { ...prev }
+      delete next[mode]
+      return next
+    })
   }
 
   return (
@@ -58,7 +77,7 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
         {modes.map((m) => (
           <button
             key={m.value}
-            onClick={() => { setMode(m.value); setResult(null) }}
+            onClick={() => setMode(m.value)}
             className={`h-touch px-4 rounded-lg text-base font-medium transition-all flex-1 sm:flex-none
               ${mode === m.value
                 ? 'bg-primary text-white shadow-sm'
@@ -70,7 +89,7 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
         ))}
       </div>
 
-      {!result && !isLoading && (
+      {!current && loadingMode !== mode && (
         <button
           onClick={handleFetch}
           className="w-full h-touch rounded-xl bg-accent text-white text-lg font-medium
@@ -80,22 +99,22 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
         </button>
       )}
 
-      {isLoading && (
+      {loadingMode === mode && (
         <div className="flex items-center justify-center py-8">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
           <span className="ml-3 text-lg text-muted">解讀中⋯</span>
         </div>
       )}
 
-      {result && (
+      {current && (
         <div>
-          {isFallback && (
+          {current.isFallback && (
             <div className="mb-3 rounded-lg bg-amber-50 border border-amber-200 px-4 py-2 text-sm text-amber-700">
               ⚠️ AI 服務暫時無法連線，以下為內建牌義參考
             </div>
           )}
           <div className="prose prose-lg max-w-none">
-            {result.split('\n').map((line, i) => {
+            {current.text.split('\n').map((line, i) => {
               if (line.startsWith('## ')) {
                 return (
                   <h2 key={i} className="text-lg font-bold text-primary mt-4 mb-2">
@@ -126,7 +145,7 @@ export default function AiReading({ question, spreadType, cards }: AiReadingProp
             })}
           </div>
           <button
-            onClick={() => setResult(null)}
+            onClick={handleReRead}
             className="mt-4 h-touch px-6 rounded-lg border-2 border-card-border text-foreground
                        text-base font-medium hover:border-primary-light transition-all"
           >
