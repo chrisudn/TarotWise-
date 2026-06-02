@@ -63,15 +63,9 @@ export default function SpreadFiveCard({ cards, onAllRevealed }: SpreadFiveCardP
                 isActive={i < revealedCount}
               />
 
-              {i < revealedCount ? (
-                <div className="w-full">
-                  <CardDisplay card={card} showPosition={false} size="compact" />
-                </div>
-              ) : (
-                <div className="w-full min-h-[120px] sm:min-h-[160px] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
-                  <span className="text-3xl sm:text-5xl text-muted">?</span>
-                </div>
-              )}
+              <div className="w-full">
+                <CardDisplay card={card} showPosition={false} size="compact" revealed={i < revealedCount} />
+              </div>
             </div>
           )
         })}

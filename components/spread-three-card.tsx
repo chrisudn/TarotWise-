@@ -52,13 +52,7 @@ export default function SpreadThreeCard({ cards, onAllRevealed }: SpreadThreeCar
               isActive={i < revealedCount}
             />
 
-            {i < revealedCount ? (
-              <CardDisplay card={card} showPosition={false} size="compact" />
-            ) : (
-              <div className="w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
-                <span className="text-3xl sm:text-5xl text-muted">?</span>
-              </div>
-            )}
+            <CardDisplay card={card} showPosition={false} size="compact" revealed={i < revealedCount} />
           </div>
         ))}
       </div>

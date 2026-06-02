@@ -13,17 +13,10 @@ interface SpreadCelticCrossProps {
 
 const positions = spreads['celtic-cross'].positions
 
-function cardOrPlaceholder(card: DrawnCard, idx: number, revealedCount: number, textSize = 'text-3xl sm:text-5xl') {
-  if (idx < revealedCount) {
-    return (
-      <div className="w-full">
-        <CardDisplay card={card} showPosition={false} size="compact" />
-      </div>
-    )
-  }
+function cardOrPlaceholder(card: DrawnCard, idx: number, revealedCount: number) {
   return (
-    <div className="w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
-      <span className={`${textSize} text-muted`}>?</span>
+    <div className="w-full">
+      <CardDisplay card={card} showPosition={false} size="compact" revealed={idx < revealedCount} />
     </div>
   )
 }
@@ -77,24 +70,16 @@ export default function SpreadCelticCross({ cards, onAllRevealed }: SpreadCeltic
             <PositionLabel label={positions[0].label} description={positions[0].description} isActive={revealedCount >= 1} />
             <PositionLabel label={positions[1].label} description={positions[1].description} isActive={revealedCount >= 2} />
             <div className="relative w-full">
-              {revealedCount >= 1 ? (
-                <div className="relative">
-                  <div className="w-full">
-                    <CardDisplay card={cards[0]} showPosition={false} size="compact" />
+              <div className="relative">
+                <div className="w-full">
+                  <CardDisplay card={cards[0]} showPosition={false} size="compact" revealed={revealedCount >= 1} />
+                </div>
+                <div className="absolute top-0 left-0 w-full -rotate-3 origin-center z-10">
+                  <div className="shadow-lg rounded-2xl overflow-visible">
+                    <CardDisplay card={cards[1]} showPosition={false} size="compact" revealed={revealedCount >= 2} />
                   </div>
-                  {revealedCount >= 2 && (
-                    <div className="absolute top-0 left-0 w-full -rotate-3 origin-center z-10">
-                      <div className="shadow-lg rounded-2xl overflow-visible">
-                        <CardDisplay card={cards[1]} showPosition={false} size="compact" />
-                      </div>
-                    </div>
-                  )}
                 </div>
-              ) : (
-                <div className="w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
-                  <span className="text-3xl sm:text-5xl text-muted">?</span>
-                </div>
-              )}
+              </div>
             </div>
           </div>
 
@@ -118,7 +103,7 @@ export default function SpreadCelticCross({ cards, onAllRevealed }: SpreadCeltic
             return (
               <div key={idx} className="flex flex-col items-center gap-1">
                 <PositionLabel label={pos.label} description={pos.description} isActive={idx < revealedCount} />
-                {cardOrPlaceholder(card, idx, revealedCount, 'text-2xl sm:text-4xl')}
+                {cardOrPlaceholder(card, idx, revealedCount)}
               </div>
             )
           })}
