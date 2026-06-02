@@ -34,9 +34,9 @@ export default function SpreadThreeCard({ cards }: SpreadThreeCardProps) {
         </button>
       )}
 
-      <div className="flex flex-col sm:grid sm:grid-cols-3 gap-4 w-full">
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full">
         {cards.map((card, i) => (
-          <div key={i} className="flex flex-col items-center gap-2">
+          <div key={i} className="flex flex-col items-center gap-1 sm:gap-2">
             <PositionLabel
               label={card.positionLabel}
               description={
@@ -48,10 +48,10 @@ export default function SpreadThreeCard({ cards }: SpreadThreeCardProps) {
             />
 
             {i < revealedCount ? (
-              <CardDisplay card={card} showPosition={false} />
+              <CardDisplay card={card} showPosition={false} size="compact" />
             ) : (
               <div className="w-full aspect-[3/4] rounded-2xl border-2 border-dashed border-card-border bg-card-bg flex items-center justify-center">
-                <span className="text-5xl sm:text-6xl text-muted">?</span>
+                <span className="text-3xl sm:text-5xl text-muted">?</span>
               </div>
             )}
           </div>

@@ -91,12 +91,14 @@ export default function Home() {
           <div className="flex flex-col items-center gap-6 w-full animate-in fade-in duration-300">
             {spreadType === 'single' ? (
               <>
-                <CardDisplay card={result[0]} />
-                <div className="flex gap-3">
-                  <Button onClick={handleSave} variant="secondary" disabled={saved}>
+                <div className="w-full max-w-xs">
+                  <CardDisplay card={result[0]} />
+                </div>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
                     {saved ? '✓ 已儲存' : '儲存結果'}
                   </Button>
-                  <Button onClick={handleClear} variant="ghost">
+                  <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                     再抽一次
                   </Button>
                 </div>
@@ -104,11 +106,11 @@ export default function Home() {
             ) : (
               <>
                 <SpreadThreeCard cards={result} />
-                <div className="flex gap-3">
-                  <Button onClick={handleSave} variant="secondary" disabled={saved}>
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                  <Button onClick={handleSave} variant="secondary" disabled={saved} className="w-full sm:w-auto">
                     {saved ? '✓ 已儲存' : '儲存結果'}
                   </Button>
-                  <Button onClick={handleClear} variant="ghost">
+                  <Button onClick={handleClear} variant="ghost" className="w-full sm:w-auto">
                     重新來過
                   </Button>
                 </div>
