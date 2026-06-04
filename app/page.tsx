@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useState, useCallback, useEffect, useRef } from 'react'
 import { drawSingleCard, drawSpread } from '@/lib/tarot-reader'
-import { saveRecord, updateRecord, deleteRecord } from '@/lib/storage'
+import { saveRecord, updateRecord } from '@/lib/storage'
 import CardDisplay from '@/components/card-display'
 import SpreadSelector from '@/components/spread-selector'
 import SpreadThreeCard from '@/components/spread-three-card'
@@ -25,12 +25,6 @@ export default function Home() {
   const handleDraw = useCallback(() => {
     setIsDrawing(true)
     setAllRevealed(false)
-
-    // delete previous draft if exists
-    if (currentRecordId.current) {
-      deleteRecord(currentRecordId.current)
-      currentRecordId.current = null
-    }
 
     if (spreadType === 'single') {
       const card = drawSingleCard()
@@ -59,6 +53,17 @@ export default function Home() {
     currentRecordId.current = id
   }, [result])
 
+  // keep question in sync after draw
+  useEffect(() => {
+    if (!currentRecordId.current) return
+    const timer = setTimeout(() => {
+      if (currentRecordId.current) {
+        updateRecord(currentRecordId.current, { question })
+      }
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [question])
+
   // persist AI readings to localStorage as they arrive
   const handleReadingUpdate = useCallback((readings: Record<string, string>) => {
     if (currentRecordId.current) {
@@ -67,20 +72,14 @@ export default function Home() {
   }, [])
 
   const handleClear = useCallback(() => {
-    if (currentRecordId.current) {
-      deleteRecord(currentRecordId.current)
-      currentRecordId.current = null
-    }
+    currentRecordId.current = null
     setResult(null)
     setQuestion('')
     setAllRevealed(false)
   }, [])
 
   const handleSpreadChange = useCallback((type: SpreadType) => {
-    if (currentRecordId.current) {
-      deleteRecord(currentRecordId.current)
-      currentRecordId.current = null
-    }
+    currentRecordId.current = null
     setSpreadType(type)
     setResult(null)
     setAllRevealed(false)

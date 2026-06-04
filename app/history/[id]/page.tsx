@@ -54,6 +54,12 @@ export default function HistoryDetailPage() {
   }
 
   const handleExport = () => {
+    const modeLabels: Record<string, string> = {
+      overall: '整體解讀',
+      'per-card': '逐張解讀',
+      both: '都要',
+    }
+
     const lines = [
       `TarotWise 塔羅記錄`,
       `日期：${dateStr}`,
@@ -68,6 +74,12 @@ export default function HistoryDetailPage() {
       }),
       ``,
     ]
+    if (record.aiReading) {
+      lines.push(`AI 塔羅解讀：`, ``)
+      for (const [mode, text] of Object.entries(record.aiReading)) {
+        lines.push(`【${modeLabels[mode] ?? mode}】`, ``, text, ``)
+      }
+    }
     if (record.note) {
       lines.push(`心得：`, record.note, ``)
     }

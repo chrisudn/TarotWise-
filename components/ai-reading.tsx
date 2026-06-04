@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import ReadingContent from './reading-content'
 import type { DrawnCard, SpreadType } from '@/types'
 import type { ReadingMode } from '@/lib/reading-prompt'
@@ -29,6 +29,8 @@ export default function AiReading({ question, spreadType, cards, disabled, onRea
   const [mode, setMode] = useState<ReadingMode>('overall')
   const [cache, setCache] = useState<Partial<Record<ReadingMode, CachedResult>>>({})
   const [loadingMode, setLoadingMode] = useState<ReadingMode | null>(null)
+  const onReadingUpdateRef = useRef(onReadingUpdate)
+  onReadingUpdateRef.current = onReadingUpdate
 
   const current = cache[mode]
 
@@ -78,9 +80,9 @@ export default function AiReading({ question, spreadType, cards, disabled, onRea
       if (result) readings[m] = result.text
     }
     if (Object.keys(readings).length > 0) {
-      onReadingUpdate?.(readings)
+      onReadingUpdateRef.current?.(readings)
     }
-  }, [cache, onReadingUpdate])
+  }, [cache])
 
   return (
     <div className="w-full rounded-2xl border-2 border-primary/20 bg-white p-4 sm:p-6">
